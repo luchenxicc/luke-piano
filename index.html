@@ -9,10 +9,8 @@
         :root { --avo-bg: #f7f9f6; --avo-green: #7c9473; --avo-dark: #556b2f; --gold: #d4af37; --white: #ffffff; }
         body { font-family: 'Quicksand', sans-serif; background: var(--avo-bg); padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
         
-        /* 布局容器 */
         .app-container { max-width: 500px; width: 100%; background: var(--white); border-radius: 40px; padding: 25px; border: 6px solid var(--avo-green); box-shadow: 0 15px 35px rgba(0,0,0,0.1); position: relative; }
         
-        /* 家长设置面板 */
         #parent-panel { display: none; background: #fff; padding: 20px; border-radius: 30px; border: 4px dashed var(--avo-green); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         textarea { width: 100%; height: 80px; border-radius: 10px; border: 1px solid #ddd; padding: 10px; margin: 10px 0; font-family: inherit; }
         
@@ -20,7 +18,6 @@
         #inner-clock { text-align: left; background: var(--avo-bg); padding: 8px 12px; border-radius: 12px; border-left: 4px solid var(--gold); }
         .btn-tool { background: #f1f5f9; border: none; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-weight: bold; color: #64748b; }
 
-        /* 任务卡片 */
         .task-card { background: #fff; border: 2px solid #eee; border-left: 12px solid var(--avo-green); border-radius: 25px; padding: 18px; margin-bottom: 20px; transition: 0.3s; }
         .task-card.active { border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
         .task-card.completed { background: var(--avo-green); border-left-color: var(--gold); color: white; border-color: var(--avo-green); }
@@ -54,8 +51,8 @@
 
 <div id="parent-panel">
     <h3 style="margin-top:0; color:var(--avo-dark)">⚙️ Parent Settings</h3>
-    <textarea id="song-input" placeholder="输入曲目名（每行一首）..."></textarea>
-    <button onclick="saveMissions()" style="background:var(--avo-green); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold; width:100%">Update 7-Min Missions 🚀</button>
+    <textarea id="song-input" placeholder="Enter song names (one per line)..."></textarea>
+    <button onclick="saveMissions()" style="background:var(--avo-green); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold; width:100%">Update Missions 🚀</button>
 </div>
 
 <div class="app-container">
@@ -71,7 +68,7 @@
     </div>
     <div style="text-align:center; margin-bottom:20px;">
         <h1>🥑 Luke's Piano</h1>
-        <span id="mission-count" class="subtitle">0 Missions Today</span>
+        <span id="mission-count" class="subtitle">Missions Loading...</span>
     </div>
     <div id="task-list"></div>
 </div>
@@ -84,12 +81,16 @@
 <script>
     let activeInterval = null;
     let runningTaskId = null;
-    const DEFAULT_TIME = 420; // 7分钟 = 420秒
+    const DEFAULT_TIME = 420; // 7 mins
 
-    let missionData = JSON.parse(localStorage.getItem('currentMissions')) || [
-        { name: "Warm-up Scales", time: DEFAULT_TIME },
-        { name: "Daily Song", time: DEFAULT_TIME }
+    const defaultMissions = [
+        { name: "Energy Shield (Warm-up)", icon: "🛡️" },
+        { name: "Rainbow Scales (Scales)", icon: "🌈" },
+        { name: "Starry Melody (Song 1)", icon: "🚀" },
+        { name: "Ultimate Quest (Song 2)", icon: "🏆" }
     ];
+
+    let missionData = JSON.parse(localStorage.getItem('currentMissions')) || defaultMissions;
     let times = {};
     let completed = {};
 
@@ -108,9 +109,9 @@
     function saveMissions() {
         const input = document.getElementById('song-input').value;
         const songNames = input.split('\n').filter(s => s.trim() !== "");
-        if(songNames.length === 0) return alert("Please enter at least one song!");
+        if(songNames.length === 0) return alert("Please enter song names!");
         
-        missionData = songNames.map(name => ({ name, time: DEFAULT_TIME }));
+        missionData = songNames.map(name => ({ name, time: DEFAULT_TIME, icon: "🎹" }));
         localStorage.setItem('currentMissions', JSON.stringify(missionData));
         toggleParentPanel();
         renderTasks();
@@ -124,15 +125,16 @@
         
         missionData.forEach((m, index) => {
             const id = index + 1;
-            times[id] = m.time;
+            times[id] = DEFAULT_TIME;
             completed[id] = false;
+            const icon = m.icon || "🎹";
             list.innerHTML += `
                 <div class="task-card" id="task${id}">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div style="flex-grow: 1;">
                             <div class="task-header">
                                 <div class="title-area">
-                                    <span class="song-name">🎹 ${m.name}</span>
+                                    <span class="song-name">${icon} ${m.name}</span>
                                     <button class="btn-play" id="btn${id}" onclick="toggleTask(${id})">START</button>
                                 </div>
                                 <div class="timer-display" id="time${id}">07:00</div>
@@ -147,7 +149,7 @@
                     </div>
                 </div>`;
         });
-        document.getElementById('mission-count').innerText = `${missionData.length} Missions Today (7m each)`;
+        document.getElementById('mission-count').innerText = `${missionData.length} Adventures Today`;
     }
 
     function toggleTask(id) {
@@ -201,7 +203,7 @@
     function checkVictory() {
         if (Object.values(completed).every(v => v === true)) {
             saveHistory();
-            setTimeout(() => { alert("Bravo Luke! Adventure Log Updated! 🌟"); location.reload(); }, 500);
+            setTimeout(() => { alert("Mission Accomplished, Luke! 🌟"); location.reload(); }, 500);
         }
     }
 
