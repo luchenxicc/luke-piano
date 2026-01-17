@@ -18,29 +18,40 @@
         #inner-clock { text-align: left; background: var(--avo-bg); padding: 8px 12px; border-radius: 12px; border-left: 4px solid var(--gold); }
         .btn-tool { background: #f1f5f9; border: none; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-weight: bold; color: #64748b; }
 
-        .task-card { background: #fff; border: 2px solid #eee; border-left: 12px solid var(--avo-green); border-radius: 25px; padding: 18px; margin-bottom: 20px; transition: 0.3s; }
+        /* 任务卡片核心布局 */
+        .task-card { background: #fff; border: 2px solid #eee; border-left: 12px solid var(--avo-green); border-radius: 25px; padding: 18px; margin-bottom: 20px; transition: 0.3s; display: flex; justify-content: space-between; align-items: stretch; }
         .task-card.active { border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
         .task-card.completed { background: var(--avo-green); border-left-color: var(--gold); color: white; border-color: var(--avo-green); }
 
-        .task-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        .title-area { display: flex; align-items: center; gap: 8px; }
+        .task-left { flex: 1; display: flex; flex-direction: column; gap: 10px; }
         .song-name { font-weight: bold; color: var(--avo-dark); font-size: 1.1rem; }
-        .task-card.completed .song-name, .task-card.completed .timer-display { color: white; }
-        .timer-display { font-family: 'Fredoka One'; font-size: 1.3rem; color: var(--avo-dark); }
-        
-        .btn-play { background: var(--gold); border: none; color: white; padding: 4px 12px; border-radius: 8px; font-family: 'Fredoka One'; cursor: pointer; font-size: 0.8rem; box-shadow: 0 3px 0 #b8962e; }
-        .btn-play.pausing { background: var(--avo-dark); box-shadow: 0 3px 0 #2d3a18; }
+        .task-card.completed .song-name { color: white; }
 
-        .sub-steps { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
-        .step { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; display: flex; align-items: center; cursor: pointer; color: #475569; }
+        /* 右侧垂直控制区 */
+        .task-right { display: flex; flex-direction: column; align-items: center; justify-content: space-between; width: 85px; margin-left: 15px; border-left: 1px solid #f1f5f9; padding-left: 10px; }
+        .task-card.completed .task-right { border-left-color: rgba(255,255,255,0.2); }
+
+        .timer-display { font-family: 'Fredoka One'; font-size: 1.3rem; color: var(--avo-dark); margin-bottom: 5px; }
+        .task-card.completed .timer-display { color: white; }
+        
+        .btn-play { background: var(--gold); border: none; color: white; padding: 6px 0; border-radius: 10px; font-family: 'Fredoka One'; cursor: pointer; font-size: 0.8rem; box-shadow: 0 3px 0 #b8962e; width: 100%; margin-bottom: 10px; }
+        .btn-play.pausing { background: var(--avo-dark); box-shadow: 0 3px 0 #2d3a18; }
+        .btn-play:active { transform: translateY(2px); box-shadow: none; }
+        .task-card.completed .btn-play { display: none; }
+
+        .btn-medal { background: #fff; border: 2px solid var(--gold); color: var(--gold); width: 100%; height: 55px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.6rem; font-family: 'Fredoka One'; cursor: pointer; transition: 0.3s; }
+        .btn-medal span { font-size: 1.2rem; }
+        .task-card.completed .btn-medal { background: var(--gold); color: white; border-color: white; height: 100%; }
+
+        /* 子任务 */
+        .sub-steps { display: flex; flex-direction: column; gap: 6px; }
+        .step { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 10px; font-size: 0.8rem; display: flex; align-items: center; cursor: pointer; color: #475569; }
         .step.done { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; font-weight: bold; }
-        .step::before { content: "⭕"; margin-right: 8px; }
+        .step::before { content: "⭕"; margin-right: 6px; }
         .step.done::before { content: "✅"; }
         .task-card.completed .step { background: rgba(255,255,255,0.2) !important; color: white !important; border: none; cursor: default; }
-        
-        .btn-medal { background: #fff; border: 3px solid var(--gold); color: var(--gold); width: 65px; height: 65px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.65rem; font-family: 'Fredoka One'; flex-shrink: 0; cursor: pointer; }
-        .task-card.completed .btn-medal { background: var(--gold); color: white; border-color: white; }
 
+        /* 历史面板 */
         .history-panel { max-width: 500px; width: 100%; margin-top: 20px; background: #fff; border-radius: 25px; padding: 15px; border: 3px solid #e2e8f0; text-align: center; }
         .history-grid { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
         .history-day { width: 45px; height: 65px; background: #f1f5f9; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; }
@@ -68,7 +79,7 @@
     </div>
     <div style="text-align:center; margin-bottom:20px;">
         <h1>🥑 Luke's Piano</h1>
-        <span id="mission-count" class="subtitle">Missions Loading...</span>
+        <span id="mission-count" class="subtitle">Daily Missions</span>
     </div>
     <div id="task-list"></div>
 </div>
@@ -110,7 +121,6 @@
         const input = document.getElementById('song-input').value;
         const songNames = input.split('\n').filter(s => s.trim() !== "");
         if(songNames.length === 0) return alert("Please enter song names!");
-        
         missionData = songNames.map(name => ({ name, time: DEFAULT_TIME, icon: "🎹" }));
         localStorage.setItem('currentMissions', JSON.stringify(missionData));
         toggleParentPanel();
@@ -130,26 +140,24 @@
             const icon = m.icon || "🎹";
             list.innerHTML += `
                 <div class="task-card" id="task${id}">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div style="flex-grow: 1;">
-                            <div class="task-header">
-                                <div class="title-area">
-                                    <span class="song-name">${icon} ${m.name}</span>
-                                    <button class="btn-play" id="btn${id}" onclick="toggleTask(${id})">START</button>
-                                </div>
-                                <div class="timer-display" id="time${id}">07:00</div>
-                            </div>
-                            <div class="sub-steps" id="steps${id}">
-                                <div class="step" onclick="handleStepClick(${id}, this)">Right Hand (x3) ✋</div>
-                                <div class="step" onclick="handleStepClick(${id}, this)">Left Hand (x3) 🤚</div>
-                                <div class="step" onclick="handleStepClick(${id}, this)">Hands Together (x2) 👐</div>
-                            </div>
+                    <div class="task-left">
+                        <span class="song-name">${icon} ${m.name}</span>
+                        <div class="sub-steps" id="steps${id}">
+                            <div class="step" onclick="handleStepClick(${id}, this)">Right Hand (x3)</div>
+                            <div class="step" onclick="handleStepClick(${id}, this)">Left Hand (x3)</div>
+                            <div class="step" onclick="handleStepClick(${id}, this)">Together (x2)</div>
                         </div>
-                        <button class="btn-medal" id="medal${id}" onclick="handleMedalClick(${id})" style="margin-left:10px;"><span>🥇</span>CLAIM</button>
+                    </div>
+                    <div class="task-right">
+                        <div class="timer-display" id="time${id}">07:00</div>
+                        <button class="btn-play" id="btn${id}" onclick="toggleTask(${id})">START</button>
+                        <button class="btn-medal" id="medal${id}" onclick="handleMedalClick(${id})">
+                            <span>🥇</span>CLAIM
+                        </button>
                     </div>
                 </div>`;
         });
-        document.getElementById('mission-count').innerText = `${missionData.length} Adventures Today`;
+        document.getElementById('mission-count').innerText = `${missionData.length} Quests Today`;
     }
 
     function toggleTask(id) {
