@@ -13,12 +13,14 @@
         
         #parent-panel { display: none; background: #fff; padding: 20px; border-radius: 30px; border: 4px dashed var(--avo-green); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         textarea { width: 100%; height: 80px; border-radius: 10px; border: 1px solid #ddd; padding: 10px; margin: 10px 0; font-family: inherit; }
-        
+        .parent-btns { display: flex; gap: 10px; }
+        .btn-update { background: var(--avo-green); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 2; }
+        .btn-clear { background: #f1f5f9; color: #64748b; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; }
+
         .top-toolbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         #inner-clock { text-align: left; background: var(--avo-bg); padding: 8px 12px; border-radius: 12px; border-left: 4px solid var(--gold); }
         .btn-tool { background: #f1f5f9; border: none; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-weight: bold; color: #64748b; }
 
-        /* 任务卡片核心布局 */
         .task-card { background: #fff; border: 2px solid #eee; border-left: 12px solid var(--avo-green); border-radius: 25px; padding: 18px; margin-bottom: 20px; transition: 0.3s; display: flex; justify-content: space-between; align-items: stretch; }
         .task-card.active { border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
         .task-card.completed { background: var(--avo-green); border-left-color: var(--gold); color: white; border-color: var(--avo-green); }
@@ -27,7 +29,6 @@
         .song-name { font-weight: bold; color: var(--avo-dark); font-size: 1.1rem; }
         .task-card.completed .song-name { color: white; }
 
-        /* 右侧垂直控制区 */
         .task-right { display: flex; flex-direction: column; align-items: center; justify-content: space-between; width: 85px; margin-left: 15px; border-left: 1px solid #f1f5f9; padding-left: 10px; }
         .task-card.completed .task-right { border-left-color: rgba(255,255,255,0.2); }
 
@@ -36,14 +37,11 @@
         
         .btn-play { background: var(--gold); border: none; color: white; padding: 6px 0; border-radius: 10px; font-family: 'Fredoka One'; cursor: pointer; font-size: 0.8rem; box-shadow: 0 3px 0 #b8962e; width: 100%; margin-bottom: 10px; }
         .btn-play.pausing { background: var(--avo-dark); box-shadow: 0 3px 0 #2d3a18; }
-        .btn-play:active { transform: translateY(2px); box-shadow: none; }
         .task-card.completed .btn-play { display: none; }
 
         .btn-medal { background: #fff; border: 2px solid var(--gold); color: var(--gold); width: 100%; height: 55px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.6rem; font-family: 'Fredoka One'; cursor: pointer; transition: 0.3s; }
-        .btn-medal span { font-size: 1.2rem; }
         .task-card.completed .btn-medal { background: var(--gold); color: white; border-color: white; height: 100%; }
 
-        /* 子任务 */
         .sub-steps { display: flex; flex-direction: column; gap: 6px; }
         .step { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 10px; font-size: 0.8rem; display: flex; align-items: center; cursor: pointer; color: #475569; }
         .step.done { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; font-weight: bold; }
@@ -51,11 +49,12 @@
         .step.done::before { content: "✅"; }
         .task-card.completed .step { background: rgba(255,255,255,0.2) !important; color: white !important; border: none; cursor: default; }
 
-        /* 历史面板 */
+        /* 统计看板样式 */
         .history-panel { max-width: 500px; width: 100%; margin-top: 20px; background: #fff; border-radius: 25px; padding: 15px; border: 3px solid #e2e8f0; text-align: center; }
-        .history-grid { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+        .stats-badge { background: var(--gold); color: white; padding: 5px 15px; border-radius: 20px; font-family: 'Fredoka One'; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); }
+        .history-grid { display: flex; gap: 8px; justify-content: center; }
         .history-day { width: 45px; height: 65px; background: #f1f5f9; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; }
-        .history-day.success { background: var(--gold); color: white; }
+        .history-day.success { background: var(--avo-green); color: white; }
     </style>
 </head>
 <body>
@@ -63,7 +62,10 @@
 <div id="parent-panel">
     <h3 style="margin-top:0; color:var(--avo-dark)">⚙️ Parent Settings</h3>
     <textarea id="song-input" placeholder="Enter song names (one per line)..."></textarea>
-    <button onclick="saveMissions()" style="background:var(--avo-green); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold; width:100%">Update Missions 🚀</button>
+    <div class="parent-btns">
+        <button class="btn-update" onclick="saveMissions()">Update Quest 🚀</button>
+        <button class="btn-clear" onclick="resetToDefault()">Reset Default 🔄</button>
+    </div>
 </div>
 
 <div class="app-container">
@@ -74,7 +76,7 @@
         </div>
         <div>
             <button class="btn-tool" onclick="toggleParentPanel()">Parent ⚙️</button>
-            <button class="btn-tool" onclick="location.reload()">Reset 🔄</button>
+            <button class="btn-tool" onclick="location.reload()">Reset Mission 🔄</button>
         </div>
     </div>
     <div style="text-align:center; margin-bottom:20px;">
@@ -85,14 +87,26 @@
 </div>
 
 <div class="history-panel">
-    <b style="color:var(--avo-dark)">🌟 Adventure Log</b>
+    <div class="stats-badge">
+        <span>🏆 Total Medals:</span>
+        <span id="total-medals-count">0</span>
+    </div>
+    <br>
+    <b style="color:var(--avo-dark); font-size: 0.9rem;">🌟 Adventure Log (Last 7 Days)</b>
     <div class="history-grid" id="history-grid"></div>
+</div>
+
+<div id="victory" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:40px; border-radius:40px; border:8px solid var(--gold); text-align:center; z-index:100; box-shadow:0 0 100px rgba(0,0,0,0.5); width:80%;">
+    <div style="font-size: 5rem;">✨🏅✨</div>
+    <h2 style="font-family:'Fredoka One'; color:var(--avo-dark)">BEYOND AMAZING!</h2>
+    <p>You've earned another Golden Medal!</p>
+    <button style="background:var(--gold); padding:12px 24px; border-radius:12px; color:white; font-family:'Fredoka One'; border:none; cursor:pointer;" onclick="location.reload()">Great!</button>
 </div>
 
 <script>
     let activeInterval = null;
     let runningTaskId = null;
-    const DEFAULT_TIME = 420; // 7 mins
+    const DEFAULT_TIME = 420;
 
     const defaultMissions = [
         { name: "Energy Shield (Warm-up)", icon: "🛡️" },
@@ -110,11 +124,29 @@
         setInterval(updateLiveClock, 1000);
         renderTasks();
         renderHistory();
+        calculateTotalMedals();
+    }
+
+    // 核心功能：计算历史记录中的总勋章数
+    function calculateTotalMedals() {
+        const history = JSON.parse(localStorage.getItem('pianoHistory') || "{}");
+        // 计算对象中值为 true 的条目总数
+        const total = Object.values(history).filter(status => status === true).length;
+        document.getElementById('total-medals-count').innerText = total;
     }
 
     function toggleParentPanel() {
         const panel = document.getElementById('parent-panel');
         panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function resetToDefault() {
+        if(confirm("Reset to default missions?")) {
+            localStorage.removeItem('currentMissions');
+            missionData = [...defaultMissions];
+            renderTasks();
+            toggleParentPanel();
+        }
     }
 
     function saveMissions() {
@@ -130,18 +162,15 @@
     function renderTasks() {
         const list = document.getElementById('task-list');
         list.innerHTML = '';
-        times = {};
-        completed = {};
-        
+        times = {}; completed = {};
         missionData.forEach((m, index) => {
             const id = index + 1;
             times[id] = DEFAULT_TIME;
             completed[id] = false;
-            const icon = m.icon || "🎹";
             list.innerHTML += `
                 <div class="task-card" id="task${id}">
                     <div class="task-left">
-                        <span class="song-name">${icon} ${m.name}</span>
+                        <span class="song-name">${m.icon || "🎹"} ${m.name}</span>
                         <div class="sub-steps" id="steps${id}">
                             <div class="step" onclick="handleStepClick(${id}, this)">Right Hand (x3)</div>
                             <div class="step" onclick="handleStepClick(${id}, this)">Left Hand (x3)</div>
@@ -170,7 +199,6 @@
         runningTaskId = id;
         document.getElementById(`task${id}`).classList.add('active');
         document.getElementById(`btn${id}`).innerText = "PAUSE";
-        document.getElementById(`btn${id}`).classList.add('pausing');
         activeInterval = setInterval(() => {
             if (times[id] > 0) { 
                 times[id]--; 
@@ -184,14 +212,12 @@
         runningTaskId = null;
         document.getElementById(`task${id}`).classList.remove('active');
         document.getElementById(`btn${id}`).innerText = "START";
-        document.getElementById(`btn${id}`).classList.remove('pausing');
     }
 
     function handleStepClick(id, el) {
         if (completed[id]) return;
         el.classList.toggle('done');
-        const container = document.getElementById(`steps${id}`);
-        const allDone = Array.from(container.querySelectorAll('.step')).every(s => s.classList.contains('done'));
+        const allDone = Array.from(document.getElementById(`steps${id}`).querySelectorAll('.step')).every(s => s.classList.contains('done'));
         if (allDone) handleMedalClick(id);
     }
 
@@ -211,7 +237,7 @@
     function checkVictory() {
         if (Object.values(completed).every(v => v === true)) {
             saveHistory();
-            setTimeout(() => { alert("Mission Accomplished, Luke! 🌟"); location.reload(); }, 500);
+            document.getElementById('victory').style.display = 'block';
         }
     }
 
@@ -219,6 +245,7 @@
         let history = JSON.parse(localStorage.getItem('pianoHistory') || "{}");
         history[new Date().toLocaleDateString('en-CA')] = true;
         localStorage.setItem('pianoHistory', JSON.stringify(history));
+        calculateTotalMedals(); // 实时更新总数
     }
 
     function renderHistory() {
