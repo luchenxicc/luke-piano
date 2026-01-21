@@ -2,25 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Luke's Piano Master</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500&display=swap" rel="stylesheet">
     <style>
         :root { --avo-bg: #f7f9f6; --avo-green: #7c9473; --avo-dark: #556b2f; --gold: #d4af37; --white: #ffffff; }
         body { font-family: 'Quicksand', sans-serif; background: var(--avo-bg); padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
         
+        /* 容器 */
         .app-container { max-width: 500px; width: 100%; background: var(--white); border-radius: 40px; padding: 25px; border: 6px solid var(--avo-green); box-shadow: 0 15px 35px rgba(0,0,0,0.1); position: relative; }
         
+        /* 家长面板 */
         #parent-panel { display: none; background: #fff; padding: 20px; border-radius: 30px; border: 4px dashed var(--avo-green); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         textarea { width: 100%; height: 80px; border-radius: 10px; border: 1px solid #ddd; padding: 10px; margin: 10px 0; font-family: inherit; }
-        .parent-btns { display: flex; gap: 10px; }
-        .btn-update { background: var(--avo-green); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 2; }
-        .btn-clear { background: #f1f5f9; color: #64748b; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; }
+        .parent-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-update { background: var(--avo-green); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; grid-column: span 2; }
+        .btn-sync { background: var(--gold); color: white; border: none; padding: 10px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .btn-clear { background: #f1f5f9; color: #64748b; border: none; padding: 10px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
 
+        /* 工具栏 */
         .top-toolbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         #inner-clock { text-align: left; background: var(--avo-bg); padding: 8px 12px; border-radius: 12px; border-left: 4px solid var(--gold); }
         .btn-tool { background: #f1f5f9; border: none; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-weight: bold; color: #64748b; }
 
+        /* 任务卡片布局 */
         .task-card { background: #fff; border: 2px solid #eee; border-left: 12px solid var(--avo-green); border-radius: 25px; padding: 18px; margin-bottom: 20px; transition: 0.3s; display: flex; justify-content: space-between; align-items: stretch; }
         .task-card.active { border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
         .task-card.completed { background: var(--avo-green); border-left-color: var(--gold); color: white; border-color: var(--avo-green); }
@@ -29,8 +34,9 @@
         .song-name { font-weight: bold; color: var(--avo-dark); font-size: 1.1rem; }
         .task-card.completed .song-name { color: white; }
 
+        /* 右侧垂直操作区 */
         .task-right { display: flex; flex-direction: column; align-items: center; justify-content: space-between; width: 85px; margin-left: 15px; border-left: 1px solid #f1f5f9; padding-left: 10px; }
-        .task-card.completed .task-right { border-left-color: rgba(255,255,255,0.2); }
+        .task-card.completed .task-right { border-left: none; }
 
         .timer-display { font-family: 'Fredoka One'; font-size: 1.3rem; color: var(--avo-dark); margin-bottom: 5px; }
         .task-card.completed .timer-display { color: white; }
@@ -40,8 +46,9 @@
         .task-card.completed .btn-play { display: none; }
 
         .btn-medal { background: #fff; border: 2px solid var(--gold); color: var(--gold); width: 100%; height: 55px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.6rem; font-family: 'Fredoka One'; cursor: pointer; transition: 0.3s; }
-        .task-card.completed .btn-medal { background: var(--gold); color: white; border-color: white; height: 100%; }
+        .task-card.completed .btn-medal { background: var(--gold); color: white; border-color: white; height: 100%; font-size: 0.7rem; }
 
+        /* 子任务步骤 */
         .sub-steps { display: flex; flex-direction: column; gap: 6px; }
         .step { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 10px; font-size: 0.8rem; display: flex; align-items: center; cursor: pointer; color: #475569; }
         .step.done { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; font-weight: bold; }
@@ -49,12 +56,14 @@
         .step.done::before { content: "✅"; }
         .task-card.completed .step { background: rgba(255,255,255,0.2) !important; color: white !important; border: none; cursor: default; }
 
-        /* 统计看板样式 */
+        /* 勋章与历史面板 */
         .history-panel { max-width: 500px; width: 100%; margin-top: 20px; background: #fff; border-radius: 25px; padding: 15px; border: 3px solid #e2e8f0; text-align: center; }
-        .stats-badge { background: var(--gold); color: white; padding: 5px 15px; border-radius: 20px; font-family: 'Fredoka One'; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); }
+        .stats-badge { background: var(--gold); color: white; padding: 5px 15px; border-radius: 20px; font-family: 'Fredoka One'; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px; }
         .history-grid { display: flex; gap: 8px; justify-content: center; }
-        .history-day { width: 45px; height: 65px; background: #f1f5f9; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; }
+        .history-day { width: 45px; height: 75px; background: #f1f5f9; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; }
         .history-day.success { background: var(--avo-green); color: white; }
+        .day-label { font-size: 0.6rem; color: var(--avo-dark); margin-bottom: 2px; }
+        .history-day.success .day-label { color: white; }
     </style>
 </head>
 <body>
@@ -64,7 +73,8 @@
     <textarea id="song-input" placeholder="Enter song names (one per line)..."></textarea>
     <div class="parent-btns">
         <button class="btn-update" onclick="saveMissions()">Update Quest 🚀</button>
-        <button class="btn-clear" onclick="resetToDefault()">Reset Default 🔄</button>
+        <button class="btn-sync" onclick="syncDataToMac()">Sync to Mac 🔄</button>
+        <button class="btn-clear" onclick="resetToDefault()">Default Tasks 🔄</button>
     </div>
 </div>
 
@@ -81,32 +91,23 @@
     </div>
     <div style="text-align:center; margin-bottom:20px;">
         <h1>🥑 Luke's Piano</h1>
-        <span id="mission-count" class="subtitle">Daily Missions</span>
+        <span id="mission-count" class="subtitle">Missions Loading...</span>
     </div>
     <div id="task-list"></div>
 </div>
 
 <div class="history-panel">
-    <div class="stats-badge">
-        <span>🏆 Total Medals:</span>
-        <span id="total-medals-count">0</span>
-    </div>
-    <br>
-    <b style="color:var(--avo-dark); font-size: 0.9rem;">🌟 Adventure Log (Last 7 Days)</b>
+    <div class="stats-badge">🏆 Total Medals: <span id="total-medals-count">0</span></div>
     <div class="history-grid" id="history-grid"></div>
 </div>
 
-<div id="victory" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:40px; border-radius:40px; border:8px solid var(--gold); text-align:center; z-index:100; box-shadow:0 0 100px rgba(0,0,0,0.5); width:80%;">
-    <div style="font-size: 5rem;">✨🏅✨</div>
-    <h2 style="font-family:'Fredoka One'; color:var(--avo-dark)">BEYOND AMAZING!</h2>
-    <p>You've earned another Golden Medal!</p>
-    <button style="background:var(--gold); padding:12px 24px; border-radius:12px; color:white; font-family:'Fredoka One'; border:none; cursor:pointer;" onclick="location.reload()">Great!</button>
-</div>
-
 <script>
+    // 注意：请将此处替换为您 Mac 的实际局域网 IP
+    const API_BASE = "http://192.168.86.81:5000"; 
+    
     let activeInterval = null;
     let runningTaskId = null;
-    const DEFAULT_TIME = 420;
+    const DEFAULT_TIME = 420; // 7 minutes
 
     const defaultMissions = [
         { name: "Energy Shield (Warm-up)", icon: "🛡️" },
@@ -116,8 +117,7 @@
     ];
 
     let missionData = JSON.parse(localStorage.getItem('currentMissions')) || defaultMissions;
-    let times = {};
-    let completed = {};
+    let times = {}; let completed = {};
 
     function init() {
         updateLiveClock();
@@ -127,12 +127,52 @@
         calculateTotalMedals();
     }
 
-    // 核心功能：计算历史记录中的总勋章数
-    function calculateTotalMedals() {
-        const history = JSON.parse(localStorage.getItem('pianoHistory') || "{}");
-        // 计算对象中值为 true 的条目总数
-        const total = Object.values(history).filter(status => status === true).length;
-        document.getElementById('total-medals-count').innerText = total;
+    // 保存逻辑：默认传数据库，iPad 本地作为 Backup
+    async function saveFinalProgress() {
+        if (Object.values(completed).every(v => v === true)) {
+            const dateStr = new Date().toLocaleDateString('en-CA');
+            
+            // 1. 本地备份
+            let history = JSON.parse(localStorage.getItem('pianoHistory') || "{}");
+            history[dateStr] = true;
+            localStorage.setItem('pianoHistory', JSON.stringify(history));
+
+            // 2. 尝试发送到 Mac 数据库
+            try {
+                const res = await fetch(`${API_BASE}/api/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date: dateStr })
+                });
+                if (res.ok) console.log("Database updated!");
+            } catch (e) {
+                console.warn("Mac is offline. Data only saved to iPad locally.");
+            }
+
+            calculateTotalMedals();
+            renderHistory();
+            setTimeout(() => alert("Master Luke, Mission Accomplished! 🌟"), 300);
+        }
+    }
+
+    // 批量同步逻辑
+    async function syncDataToMac() {
+        const localHistory = JSON.parse(localStorage.getItem('pianoHistory') || "{}");
+        const dates = Object.keys(localHistory).filter(d => localHistory[d] === true);
+        if (dates.length === 0) return alert("No data found to sync.");
+
+        try {
+            const res = await fetch(`${API_BASE}/api/sync`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dates })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                alert(data.message);
+                renderHistory();
+            }
+        } catch (e) { alert("Failed to connect to Mac. Check Wi-Fi/IP."); }
     }
 
     function toggleParentPanel() {
@@ -172,9 +212,9 @@
                     <div class="task-left">
                         <span class="song-name">${m.icon || "🎹"} ${m.name}</span>
                         <div class="sub-steps" id="steps${id}">
-                            <div class="step" onclick="handleStepClick(${id}, this)">Right Hand (x3)</div>
-                            <div class="step" onclick="handleStepClick(${id}, this)">Left Hand (x3)</div>
-                            <div class="step" onclick="handleStepClick(${id}, this)">Together (x2)</div>
+                            <div class="step" onclick="handleStepClick(${id}, this)">Right Hand (x3) ✋</div>
+                            <div class="step" onclick="handleStepClick(${id}, this)">Left Hand (x3) 🤚</div>
+                            <div class="step" onclick="handleStepClick(${id}, this)">Together (x2) 👐</div>
                         </div>
                     </div>
                     <div class="task-right">
@@ -191,19 +231,22 @@
 
     function toggleTask(id) {
         if (completed[id]) return;
-        if (runningTaskId === id) { pauseTask(id); } 
-        else { if (runningTaskId !== null) pauseTask(runningTaskId); startTask(id); }
+        if (runningTaskId === id) pauseTask(id);
+        else { if (runningTaskId) pauseTask(runningTaskId); startTask(id); }
     }
 
     function startTask(id) {
         runningTaskId = id;
         document.getElementById(`task${id}`).classList.add('active');
         document.getElementById(`btn${id}`).innerText = "PAUSE";
+        document.getElementById(`btn${id}`).classList.add('pausing');
         activeInterval = setInterval(() => {
-            if (times[id] > 0) { 
-                times[id]--; 
-                document.getElementById(`time${id}`).innerText = `${Math.floor(times[id]/60).toString().padStart(2,'0')}:${(times[id]%60).toString().padStart(2,'0')}`;
-            } else { handleMedalClick(id); }
+            if (times[id] > 0) {
+                times[id]--;
+                let m = Math.floor(times[id]/60).toString().padStart(2,'0');
+                let s = (times[id]%60).toString().padStart(2,'0');
+                document.getElementById(`time${id}`).innerText = `${m}:${s}`;
+            } else handleMedalClick(id);
         }, 1000);
     }
 
@@ -212,13 +255,15 @@
         runningTaskId = null;
         document.getElementById(`task${id}`).classList.remove('active');
         document.getElementById(`btn${id}`).innerText = "START";
+        document.getElementById(`btn${id}`).classList.remove('pausing');
     }
 
     function handleStepClick(id, el) {
         if (completed[id]) return;
         el.classList.toggle('done');
-        const allDone = Array.from(document.getElementById(`steps${id}`).querySelectorAll('.step')).every(s => s.classList.contains('done'));
-        if (allDone) handleMedalClick(id);
+        if (Array.from(document.getElementById(`steps${id}`).querySelectorAll('.step')).every(s => s.classList.contains('done'))) {
+            handleMedalClick(id);
+        }
     }
 
     function handleMedalClick(id) {
@@ -227,25 +272,14 @@
         const container = document.getElementById(`steps${id}`);
         container.querySelectorAll('.step').forEach(s => s.classList.add('done'));
         completed[id] = true;
-        const card = document.getElementById(`task${id}`);
-        card.classList.remove('active');
-        card.classList.add('completed');
+        document.getElementById(`task${id}`).classList.add('completed');
         document.getElementById(`medal${id}`).innerHTML = "<span>🏅</span>DONE!";
-        checkVictory();
+        saveFinalProgress();
     }
 
-    function checkVictory() {
-        if (Object.values(completed).every(v => v === true)) {
-            saveHistory();
-            document.getElementById('victory').style.display = 'block';
-        }
-    }
-
-    function saveHistory() {
-        let history = JSON.parse(localStorage.getItem('pianoHistory') || "{}");
-        history[new Date().toLocaleDateString('en-CA')] = true;
-        localStorage.setItem('pianoHistory', JSON.stringify(history));
-        calculateTotalMedals(); // 实时更新总数
+    function calculateTotalMedals() {
+        const history = JSON.parse(localStorage.getItem('pianoHistory') || "{}");
+        document.getElementById('total-medals-count').innerText = Object.values(history).filter(v => v).length;
     }
 
     function renderHistory() {
@@ -254,19 +288,23 @@
         grid.innerHTML = '';
         for (let i = 6; i >= 0; i--) {
             let d = new Date(); d.setDate(d.getDate() - i);
-            let dateKey = d.toLocaleDateString('en-CA');
-            grid.innerHTML += `<div class="history-day ${history[dateKey]?'success':''}">
-                <b style="font-size:0.6rem">${d.toLocaleDateString('en-US',{weekday:'short'})}</b>
-                <b>${d.getMonth()+1}/${d.getDate()}</b>
-                <span>${history[dateKey]?'⭐':''}</span>
-            </div>`;
+            let key = d.toLocaleDateString('en-CA');
+            let dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+            let dateDisplay = (d.getMonth() + 1) + '/' + d.getDate();
+            
+            grid.innerHTML += `
+                <div class="history-day ${history[key] ? 'success' : ''}">
+                    <span class="day-label">${dayName}</span>
+                    <b style="font-size:0.8rem">${dateDisplay}</b>
+                    <span style="margin-top:2px">${history[key] ? '⭐' : ''}</span>
+                </div>`;
         }
     }
 
     function updateLiveClock() {
         const now = new Date();
         document.getElementById('live-date').innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        document.getElementById('live-time').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+        document.getElementById('live-time').innerText = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
     }
 
     init();
