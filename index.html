@@ -159,20 +159,26 @@
     async function syncDataToMac() {
         const localHistory = JSON.parse(localStorage.getItem('pianoHistory') || "{}");
         const dates = Object.keys(localHistory).filter(d => localHistory[d] === true);
-        if (dates.length === 0) return alert("No data found to sync.");
-
+        
+        console.log("Attempting to sync dates:", dates);
+        console.log("Target URL:", `${API_BASE}/api/sync`);
+    
         try {
             const res = await fetch(`${API_BASE}/api/sync`, {
                 method: 'POST',
+                mode: 'cors', // 明确开启 CORS 模式
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dates })
+                body: JSON.stringify({ dates: dates })
             });
-            if (res.ok) {
-                const data = await res.json();
-                alert(data.message);
-                renderHistory();
-            }
-        } catch (e) { alert("Failed to connect to Mac. Check Wi-Fi/IP."); }
+            
+            const data = await res.json();
+            console.log("Server Response:", data);
+            alert("Success: " + data.message);
+            renderHistory();
+        } catch (e) {
+            console.error("Sync Error:", e);
+            alert("Failed: " + e.message);
+        }
     }
 
     function toggleParentPanel() {
